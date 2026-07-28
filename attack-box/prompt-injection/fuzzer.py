@@ -4,6 +4,9 @@
 
 ## This is for Educational Purpose only ##
 
+## This Prompt Injection Scanner script acts as an automated security scanner. It loops through a dataset of adversarial inputs, sends them 
+## to your AI target gateway, and evaluates if the application's safety mechanisms failed. ##
+
 import requests
 import json
 import time
