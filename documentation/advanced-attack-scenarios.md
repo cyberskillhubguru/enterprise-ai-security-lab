@@ -100,6 +100,13 @@ This matrix charts multi-stage, sophisticated attack chains within the enterpris
 
 \#### 2. Indicator of Compromise (IoC)
 
+### 🧬 Scenario C: Internal DNS Spoofing & MCP Tool Hijacking
+*   **Vector Classification:** Core Network Infrastructure Spoofing.
+*   **Target Components:** Internal DNS Server -> Target AI Gateway -> Attacker Host.
+*   **Concept:** Poisoning internal name resolution to route secure MCP database requests through an adversarial proxy, capturing sensitive enterprise queries in transit.
+
+
+
 \*   Anomalous outbound HTTP network sessions initiated directly from the isolated database cluster towards external hosts.
 
 
