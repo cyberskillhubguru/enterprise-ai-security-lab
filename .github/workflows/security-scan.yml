@@ -1,0 +1,41 @@
+name: "🛡️ Enterprise AppSec Code Scan"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  security-audit:
+    name: "SAST & Secret Discovery Pipeline"
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Check out the repository code
+    - name: Checkout Code Base
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Required for deep git history secret scanning
+
+    # Step 2: Set up Python Environment
+    - name: Initialize Python Runtime
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    # Step 3: Run Bandit (Static Application Security Testing for Python Flaws)
+    - name: Execute Bandit SAST Engine
+      run: |
+        pip install bandit
+        # Scans your target directories for insecure string manipulation or raw SQL concatenation
+        bandit -r target-infrastructure/ attack-box/ -ll || echo "Vulnerabilities detected by Bandit! Review logs for high/critical flaws."
+
+    # Step 4: Run TruffleHog to detect leaked API keys or credentials
+    - name: Secret Leak Check (TruffleHog)
+      uses: trufflesecurity/trufflehog-actions@main
+      with:
+        path: ./
+        base: ${{ github.event.repository.default_branch }}
+        head: HEAD
+        extra_args: --only-verified
