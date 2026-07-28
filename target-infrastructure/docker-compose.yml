@@ -1,0 +1,60 @@
+## This setup allows you to run a complete enterprise target simulation right on my local devices, and home security lab. ##
+
+## Create three interconnected components: ##
+
+## 1. A Docker Compose environment that spins up the segregated networks.
+## 2. A Vulnerable MCP Server that handles unsafe backend tools.
+## 3. A Frontend Web Application that acts as the user-facing AI chat gateway.
+
+## 1. The Network Orchestrator 
+
+## This configuration uses Docker networks to mimic your physical network zones. The backend databases are completely 
+  hidden from your attack host, they can only be reached by exploiting the frontend web application. ##
+
+  version: '3.8'
+
+networks:
+  perimeter-wan:
+    driver: bridge
+  enterprise-lan:
+    internal: true # Strictly isolates the backend tier from direct external attack
+
+services:
+  # --- TARGET AI FRONTEND APP GATEWAY ---
+  vulnerable-app:
+    image: python:3.11-slim
+    container_name: target-ai-frontend
+    networks:
+      - perimeter-wan
+      - enterprise-lan
+    ports:
+      - "8000:8000" # Exposed to your attack host for testing
+    volumes:
+      - ./vulnerable-app:/app
+      - ./mcp-server:/mcp
+    environment:
+      - MCP_SERVER_URL=http://mcp-server:5000
+    command: sh -c "pip install flask requests && python /app/server.py"
+
+  # --- MODEL CONTEXT PROTOCOL (MCP) SERVER ---
+  mcp-server:
+    image: python:3.11-slim
+    container_name: target-mcp-server
+    networks:
+      - enterprise-lan # Hidden from the outside world
+    volumes:
+      - ./mcp-server:/app
+    environment:
+      - DB_HOST=pi3b-sql-db
+    command: sh -c "pip install flask && python /app/mcp_server.py"
+
+  # --- SIMULATED PI 3B #2: RELATIONAL DATABASE ---
+  pi3b-sql-db:
+    image: postgres:15-alpine
+    container_name: pi3b-sql-db
+    networks:
+      - enterprise-lan # Hidden from the outside world
+    environment:
+      POSTGRES_USER: [enterprise user]
+      POSTGRES_PASSWORD: [password of the account]
+      POSTGRES_DB: corporate_records
