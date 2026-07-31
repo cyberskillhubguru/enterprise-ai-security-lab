@@ -23,7 +23,7 @@ The diagram below reflects the final bare-metal architecture deployment across t
        [ Zone A: Public-Facing Attack Space ]
                          │
          ┌───────────────┴───────────────┐
-         │ (192.168.10.150)              │ (192.168.10.X)
+         │ (IP Address)              │ (IP Address)
          ▼                               ▼
   [ Attack Laptop ]              [ Other WAN Hosts ]
   (Gigabyte RTX 3060)
@@ -88,4 +88,4 @@ Documenting how information flows across these network boundaries helps isolate 
 2. The payload slips past standard boundary rules because it looks like normal application text.
 3. The **Target AI Gateway** executes the unchecked parameter, granting the attacker a low-privilege reverse shell terminal session *inside* the gateway node.
 4. The attacker uses this hijacked foothold inside the network to look out across the inner ring (`VLAN 30`), completely bypassing the perimeter firewall.
-5. The attacker discovers and exploits `10.30.0.99` (The unpatched **Shadow IT Pi 3B**), compromising deep enterprise network segments.
+5. The attacker discovers and exploits `IP Address` (The unpatched **Shadow IT Pi 3B**), compromising deep enterprise network segments.
